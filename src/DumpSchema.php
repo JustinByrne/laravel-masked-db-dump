@@ -2,10 +2,11 @@
 
 namespace BeyondCode\LaravelMaskedDumper;
 
-use Faker\Factory;
-use Doctrine\DBAL\Schema\Table;
+use BeyondCode\LaravelMaskedDumper\Schema\Table;
 use BeyondCode\LaravelMaskedDumper\TableDefinitions\TableDefinition;
+use Faker\Factory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DumpSchema
 {
@@ -58,7 +59,7 @@ class DumpSchema
     protected function getTable(string $tableName)
     {
         $table = collect($this->availableTables)->first(function (Table $table) use ($tableName) {
-            return $table->getName() === $tableName;
+            return $table->name === $tableName;
         });
 
         if (is_null($table)) {
@@ -82,7 +83,15 @@ class DumpSchema
             return;
         }
 
-        $this->availableTables = $this->getConnection()->getDoctrineSchemaManager()->listTables();
+        $tables = collect();
+        $schemaConn = Schema::connection($this->getConnection()->getConfig('driver'));
+        $connTables = $schemaConn->getTables();
+
+        foreach ($connTables as $table) {
+            $tables->push(new Table($table));
+        }
+
+        $this->availableTables = $tables;
     }
 
     public function load()
@@ -91,7 +100,7 @@ class DumpSchema
 
         if ($this->loadAllTables) {
             $this->dumpTables = collect($this->availableTables)->mapWithKeys(function (Table $table) {
-                return [$table->getName() => new TableDefinition($table)];
+                return [$table->name => new TableDefinition($table)];
             })->toArray();
         }
 
