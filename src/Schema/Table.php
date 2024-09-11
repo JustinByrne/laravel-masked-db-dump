@@ -33,6 +33,11 @@ class Table
         $this->engine = $table['engine'];
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     private function getColumns(): Collection
     {
         $columns = collect();
