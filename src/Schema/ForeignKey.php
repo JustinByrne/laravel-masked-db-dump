@@ -33,11 +33,11 @@ final class ForeignKey
 
     public function toSql(): string
     {
-        $sql = "CONSTRAINT {$this->name} FOREIGN KEY (";
-        $sql .= implode(',', $this->columns->toArray());
-        $sql .= ") REFERENCES {$this->foreign_table} (`";
+        $sql = "CONSTRAINT `{$this->name}` FOREIGN KEY (`";
+        $sql .= implode('`, `', $this->columns->toArray());
+        $sql .= "`) REFERENCES `{$this->foreign_table}` (`";
         $sql .= implode('`, `', $this->foreign_columns->toArray());
-        $sql .= '`)' . PHP_EOL;
+        $sql .= '`)';
 
         return $sql;
     }
