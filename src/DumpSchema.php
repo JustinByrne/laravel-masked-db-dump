@@ -84,12 +84,11 @@ class DumpSchema
         }
 
         $tables = collect();
-        $schemaConn = Schema::connection($this->getConnection()->getConfig('driver'));
-        $connTables = $schemaConn->getTables();
-
-        foreach ($connTables as $table) {
+        $conn = Schema::connection($this->getConnection()->getConfig('driver'));
+        
+        collect($conn->getTables())->each(function (array $table) use (&$tables) {
             $tables->push(new Table($table));
-        }
+        });
 
         $this->availableTables = $tables;
     }
