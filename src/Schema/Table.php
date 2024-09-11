@@ -22,8 +22,6 @@ class Table
 
     public readonly ?string $engine;
 
-    private readonly string $dbName;
-
     public function __construct(array $table)
     {
         $this->name = $table['name'];
@@ -33,8 +31,6 @@ class Table
         $this->foreignKeys = $this->getForeignKeys();
         $this->collation = $table['collation'];
         $this->engine = $table['engine'];
-
-        $this->dbName = DB::connection()->getDatabaseName();
     }
 
     private function getColumns(): Collection
@@ -72,15 +68,9 @@ class Table
         return $indexes;
     }
 
-    private function generateDropQuery(): string
-    {
-        return "DROP TABLE `{$this->dbName}`.`{$this->name}`;";
-    }
-
     public function toSql(): string
     {
-        $sql = $this->generateDropQuery() . PHP_EOL;
-        $sql .= "CREATE TABLE `{$this->name}` (" . PHP_EOL;
+        $sql = "CREATE TABLE `{$this->name}` (" . PHP_EOL;
         
         // columns
         $this->columns->each(function (Column $column, int $key) use (&$sql) {
