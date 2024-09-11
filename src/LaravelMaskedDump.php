@@ -2,10 +2,8 @@
 
 namespace BeyondCode\LaravelMaskedDumper;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Schema\Schema;
-use Illuminate\Console\OutputStyle;
 use BeyondCode\LaravelMaskedDumper\TableDefinitions\TableDefinition;
+use Illuminate\Console\OutputStyle;
 
 class LaravelMaskedDump
 {
@@ -49,10 +47,7 @@ class LaravelMaskedDump
 
     protected function transformResultForInsert($row, TableDefinition $table)
     {
-        /** @var Connection $connection */
-        $connection = $this->definition->getConnection()->getDoctrineConnection();
-
-        return collect($row)->map(function ($value, $column) use ($connection, $table) {
+        return collect($row)->map(function ($value, $column) use ($table) {
             if ($columnDefinition = $table->findColumn($column)) {
                 $value = $columnDefinition->modifyValue($value);
             }
@@ -64,7 +59,7 @@ class LaravelMaskedDump
                 return '""';
             }
 
-            return $connection->quote($value);
+            return $this->escapeQuote($value);
         })->toArray();
     }
 
