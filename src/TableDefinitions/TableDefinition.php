@@ -2,9 +2,9 @@
 
 namespace BeyondCode\LaravelMaskedDumper\TableDefinitions;
 
-use BeyondCode\LaravelMaskedDumper\Contracts\Column;
 use BeyondCode\LaravelMaskedDumper\ColumnDefinitions\ColumnDefinition;
-use Doctrine\DBAL\Schema\Table;
+use BeyondCode\LaravelMaskedDumper\Contracts\Column;
+use BeyondCode\LaravelMaskedDumper\Schema\Table;
 
 class TableDefinition
 {
