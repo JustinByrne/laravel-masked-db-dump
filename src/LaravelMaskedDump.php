@@ -70,11 +70,7 @@ class LaravelMaskedDump
 
     protected function dumpSchema(TableDefinition $table)
     {
-        $platform = $this->definition->getConnection()->getDoctrineSchemaManager()->getDatabasePlatform();
-
-        $schema = new Schema([$table->getDoctrineTable()]);
-
-        return implode(";", $schema->toSql($platform)) . ";" . PHP_EOL;
+        return $table->getDoctrineTable()->toSql();
     }
 
     protected function lockTable(string $tableName)
