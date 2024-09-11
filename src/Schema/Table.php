@@ -83,15 +83,15 @@ class Table
 
         // primary keys
         $this->indexes->each(function (Index $index) use (&$sql) {
-            $sql .= ', ' . $index->toSql() . PHP_EOL;
+            $sql .= ', ' . PHP_EOL . $index->toSql();
         });
 
         // foreign keys
         $this->foreignKeys->each(function (ForeignKey $foreignKey) use (&$sql) {
-            $sql .= ', ' . $foreignKey->toSql() . PHP_EOL;
+            $sql .= ', ' . PHP_EOL . $foreignKey->toSql();
         });
 
-        $sql .= ');';
+        $sql .= PHP_EOL . ');' . PHP_EOL;
 
         return $sql;
     }
