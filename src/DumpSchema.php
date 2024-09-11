@@ -100,7 +100,7 @@ class DumpSchema
 
         if ($this->loadAllTables) {
             $this->dumpTables = collect($this->availableTables)->mapWithKeys(function (Table $table) {
-                return [$table->name => new TableDefinition($table)];
+                return [$table->getName() => new TableDefinition($table)];
             })->toArray();
         }
 
