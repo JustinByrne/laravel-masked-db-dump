@@ -116,4 +116,11 @@ class LaravelMaskedDump
 
         return $query;
     }
+
+    protected function escapeQuote(string $str): string
+    {
+        $c = "'";
+            
+        return $c . str_replace($c, $c . $c, $str) . $c;
+    }
 }
