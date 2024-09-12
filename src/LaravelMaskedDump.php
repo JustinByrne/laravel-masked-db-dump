@@ -31,12 +31,16 @@ class LaravelMaskedDump
     {
         $tables = $this->definition->getDumpTables();
 
-        $query = '';
-
         $overallTableProgress = $this->output->createProgressBar(count($tables));
 
+        if ($this->gzip) {
+            $gz = gzopen($this->outputFile . '.gz', 'w9');
+        } else {
+            file_put_contents($this->outputFile, '');
+        }
+
         foreach ($tables as $tableName => $table) {
-            $query .= "DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL;
+            $query = "DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL;
             $query .= $this->dumpSchema($table);
 
             if ($table->shouldDumpData()) {
@@ -47,10 +51,23 @@ class LaravelMaskedDump
                 $query .= $this->unlockTable($tableName);
             }
 
+            if ($this->gzip) {
+                gzwrite($gz, $query);
+            } else {
+                file_put_contents($this->outputFile, $query, FILE_APPEND);
+            }
+
             $overallTableProgress->advance();
         }
 
-        return $query;
+        $this->output->newLine();
+
+        if ($this->gzip) {
+            gzclose($gz);
+            $this->output->info('Wrote database dump to ' . $this->outputFile . '.gz');
+        } else {
+            $this->output->info('Wrote database dump to ' . $this->outputFile);
+        }
     }
 
     protected function transformResultForInsert($row, TableDefinition $table)
@@ -123,7 +140,7 @@ class LaravelMaskedDump
     protected function escapeQuote(string $str): string
     {
         $c = "'";
-            
+
         return $c . str_replace($c, $c . $c, $str) . $c;
     }
 }
