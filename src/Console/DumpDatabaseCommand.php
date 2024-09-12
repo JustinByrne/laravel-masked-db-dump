@@ -2,8 +2,8 @@
 
 namespace BeyondCode\LaravelMaskedDumper\Console;
 
-use Illuminate\Console\Command;
 use BeyondCode\LaravelMaskedDumper\LaravelMaskedDump;
+use Illuminate\Console\Command;
 
 class DumpDatabaseCommand extends Command
 {
@@ -17,26 +17,15 @@ class DumpDatabaseCommand extends Command
         $definition = is_callable($definition) ? call_user_func($definition) : $definition;
         $definition->load();
 
-        $this->info('Starting Database dump');
+        $this->output->info('Starting Database dump');
 
-        $dumper = new LaravelMaskedDump($definition, $this->output);
-        $dump = $dumper->dump();
+        $dumper = new LaravelMaskedDump(
+            $definition,
+            $this->output,
+            $this->argument('output'),
+            $this->option('gzip'),
+        );
 
-        $this->output->writeln('');
-        $this->writeOutput($dump);
-    }
-
-    protected function writeOutput(string $dump)
-    {
-        if ($this->option('gzip')) {
-            $gz = gzopen($this->argument('output') . '.gz', 'w9');
-            gzwrite($gz, $dump);
-            gzclose($gz);
-
-            $this->info('Wrote database dump to ' . $this->argument('output') . '.gz');
-        } else {
-            file_put_contents($this->argument('output'), $dump);
-            $this->info('Wrote database dump to ' . $this->argument('output'));
-        }
+        $dumper->dump();
     }
 }
