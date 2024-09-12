@@ -36,25 +36,20 @@ class LaravelMaskedDump
         if ($this->gzip) {
             $gz = gzopen($this->outputFile . '.gz', 'w9');
         } else {
+            $gz = null;
             file_put_contents($this->outputFile, '');
         }
 
         foreach ($tables as $tableName => $table) {
-            $query = "DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL;
-            $query .= $this->dumpSchema($table);
+            $this->writeToFile("DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL, $gz);
+            $this->writeToFile($this->dumpSchema($table), $gz);
 
             if ($table->shouldDumpData()) {
-                $query .= $this->lockTable($tableName);
+                $this->writeToFile($this->lockTable($tableName), $gz);
 
-                $query .= $this->dumpTableData($table);
+                $this->dumpTableData($table, $gz);
 
-                $query .= $this->unlockTable($tableName);
-            }
-
-            if ($this->gzip) {
-                gzwrite($gz, $query);
-            } else {
-                file_put_contents($this->outputFile, $query, FILE_APPEND);
+                $this->writeToFile($this->unlockTable($tableName), $gz);
             }
 
             $overallTableProgress->advance();
@@ -105,36 +100,34 @@ class LaravelMaskedDump
             "UNLOCK TABLES;" . PHP_EOL;
     }
 
-    protected function dumpTableData(TableDefinition $table)
+    protected function dumpTableData(TableDefinition $table, $file)
     {
-        $query = '';
-
         $queryBuilder = $this->definition->getConnection()
             ->table($table->getDoctrineTable()->getName());
 
         $table->modifyQuery($queryBuilder);
 
         $queryBuilder->get()
-            ->each(function ($row, $index) use ($table, &$query) {
+            ->each(function ($row, $index) use ($table, $file) {
                 $row = $this->transformResultForInsert((array)$row, $table);
                 $tableName = $table->getDoctrineTable()->getName();
 
-                $query .= "INSERT INTO `${tableName}` (`" . implode('`, `', array_keys($row)) . '`) VALUES ';
-                $query .= "(";
+                $this->writeToFile("INSERT INTO `$tableName` (`" . implode('`, `', array_keys($row)) . '`) VALUES ', $file);
+                $this->writeToFile("(", $file);
 
                 $firstColumn = true;
                 foreach ($row as $value) {
                     if (!$firstColumn) {
-                        $query .= ", ";
+                        $this->writeToFile(", ", $file);
                     }
-                    $query .= $value;
+                    $this->writeToFile($value, $file);
                     $firstColumn = false;
                 }
 
-                $query .= ");" . PHP_EOL;
+                $this->writeToFile(");" . PHP_EOL, $file);
             });
 
-        return $query;
+        return;
     }
 
     protected function escapeQuote(string $str): string
@@ -142,5 +135,14 @@ class LaravelMaskedDump
         $c = "'";
 
         return $c . str_replace($c, $c . $c, $str) . $c;
+    }
+
+    protected function writeToFile(string $dump, $file): void
+    {
+        if ($this->gzip) {
+            gzwrite($file, $dump);
+        } else {
+            file_put_contents($this->outputFile, $dump, FILE_APPEND);
+        }
     }
 }
