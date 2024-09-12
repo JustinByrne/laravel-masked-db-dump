@@ -13,10 +13,18 @@ class LaravelMaskedDump
     /** @var OutputStyle */
     protected $output;
 
-    public function __construct(DumpSchema $definition, OutputStyle $output)
+    /** @var string */
+    protected $outputFile;
+
+    /** @var bool */
+    protected $gzip;
+
+    public function __construct(DumpSchema $definition, OutputStyle $output, string $outputFile, bool $gzip = false)
     {
         $this->definition = $definition;
         $this->output = $output;
+        $this->outputFile = $outputFile;
+        $this->gzip = $gzip;
     }
 
     public function dump()
