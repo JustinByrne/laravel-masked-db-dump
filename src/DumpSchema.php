@@ -59,7 +59,7 @@ class DumpSchema
     protected function getTable(string $tableName)
     {
         $table = collect($this->availableTables)->first(function (Table $table) use ($tableName) {
-            return $table->name === $tableName;
+            return $table->getName() === $tableName;
         });
 
         if (is_null($table)) {
