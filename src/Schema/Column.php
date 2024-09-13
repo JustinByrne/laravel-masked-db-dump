@@ -4,17 +4,23 @@ namespace BeyondCode\LaravelMaskedDumper\Schema;
 
 final class Column
 {
-    public readonly string $name;
+    /** @var string */
+    protected $name;
 
-    public readonly string $type;
+    /** @var string */
+    protected $type;
 
-    public readonly bool $nullable;
+    /** @var bool */
+    protected $nullable;
 
-    public readonly ?string $default;
+    /** @var string|null */
+    protected $default;
 
-    public readonly bool $auto_increment;
+    /** @var bool */
+    protected $auto_increment;
 
-    public readonly ?string $comment;
+    /** @var string|null */
+    protected $comment;
 
     public function __construct(array $column)
     {
@@ -24,6 +30,36 @@ final class Column
         $this->default = $column['default'];
         $this->auto_increment = $column['auto_increment'];
         $this->comment = $column['comment'];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    public function getDefault(): ?string
+    {
+        return $this->default;
+    }
+
+    public function getAutoIncrement(): bool
+    {
+        return $this->auto_increment;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
     }
 
     public function toSql(): string

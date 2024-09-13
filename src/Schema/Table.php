@@ -3,24 +3,30 @@
 namespace BeyondCode\LaravelMaskedDumper\Schema;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class Table
 {
-    public readonly string $name;
+    /** @var string */
+    protected $name;
 
-    public readonly ?string $comment;
+    /** @var string|null */
+    protected $comment;
 
-    public readonly Collection $columns;
+    /** @var Collection */
+    protected $columns;
 
-    public readonly Collection $indexes;
+    /** @var Collection */
+    protected $indexes;
 
-    public readonly Collection $foreignKeys;
+    /** @var Collection */
+    protected $foreignKeys;
 
-    public readonly ?string $collation;
+    /** @var string|null */
+    protected $collation;
 
-    public readonly ?string $engine;
+    /** @var string|null */
+    protected $engine;
 
     public function __construct(array $table)
     {
@@ -36,6 +42,21 @@ class Table
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function getCollation(): ?string
+    {
+        return $this->collation;
+    }
+
+    public function getEngine(): ?string
+    {
+        return $this->engine;
     }
 
     private function getColumns(): Collection

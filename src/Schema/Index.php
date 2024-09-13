@@ -6,15 +6,20 @@ use Illuminate\Support\Collection;
 
 final class Index
 {
-    public readonly string $name;
+    /** @var string */
+    protected $name;
 
-    public readonly ?string $type;
+    /** @var string|null */
+    protected $type;
 
-    public readonly Collection $columns;
+    /** @var Collection */
+    protected $columns;
 
-    public readonly bool $unique;
+    /** @var bool */
+    protected $unique;
 
-    public readonly bool $primary;
+    /** @var bool */
+    protected $primary;
 
     public function __construct(array $index)
     {
@@ -23,6 +28,31 @@ final class Index
         $this->columns = collect($index['columns']);
         $this->unique = $index['unique'];
         $this->primary = $index['primary'];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function getColumns(): Collection
+    {
+        return $this->columns;
+    }
+
+    public function getUnique(): bool
+    {
+        return $this->unique;
+    }
+
+    public function getPrimary(): bool
+    {
+        return $this->primary;
     }
 
     public function toSql(): string

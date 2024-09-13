@@ -6,19 +6,26 @@ use Illuminate\Support\Collection;
 
 final class ForeignKey
 {
-    public readonly string $name;
+    /** @var string */
+    protected $name;
 
-    public readonly Collection $columns;
+    /** @var Collection */
+    protected $columns;
 
-    public readonly string $foreign_schema;
+    /** @var string */
+    protected $foreign_schema;
 
-    public readonly string $foreign_table;
+    /** @var string */
+    protected $foreign_table;
 
-    public readonly Collection $foreign_columns;
+    /** @var Collection */
+    protected $foreign_columns;
 
-    public readonly string $on_update;
+    /** @var string */
+    protected $on_update;
 
-    public readonly string $on_delete;
+    /** @var string */
+    protected $on_delete;
     
     public function __construct(array $foreign)
     {
@@ -29,6 +36,41 @@ final class ForeignKey
         $this->foreign_columns = collect($foreign['foreign_columns']);
         $this->on_update = $foreign['on_update'];
         $this->on_delete = $foreign['on_delete'];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getColumns(): Collection
+    {
+        return $this->columns;
+    }
+
+    public function getForeignSchema(): string
+    {
+        return $this->foreign_schema;
+    }
+
+    public function getForeignTable(): string
+    {
+        return $this->foreign_table;
+    }
+
+    public function getForeignColumns(): Collection
+    {
+        return $this->foreign_columns;
+    }
+
+    public function getOnUpdate(): string
+    {
+        return $this->on_update;
+    }
+
+    public function getOnDelete(): string
+    {
+        return $this->on_delete;
     }
 
     public function toSql(): string
