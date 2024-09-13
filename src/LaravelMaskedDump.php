@@ -40,6 +40,8 @@ class LaravelMaskedDump
             file_put_contents($this->outputFile, '');
         }
 
+        $this->writeToFile('SET FOREIGN_KEY_CHECKS=0;' . PHP_EOL, $gz);
+
         foreach ($tables as $tableName => $table) {
             $this->writeToFile("DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL, $gz);
             $this->writeToFile($this->dumpSchema($table), $gz);
@@ -54,6 +56,8 @@ class LaravelMaskedDump
 
             $overallTableProgress->advance();
         }
+
+        $this->writeToFile('SET FOREIGN_KEY_CHECKS=1;', $gz);
 
         $this->output->newLine();
 
