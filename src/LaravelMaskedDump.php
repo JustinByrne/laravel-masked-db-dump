@@ -76,6 +76,10 @@ class LaravelMaskedDump
                 $value = $columnDefinition->modifyValue($value);
             }
 
+            if (str_contains($value, "\\")) {
+                $value = str_replace('\\', '\\\\', $value);
+            }
+
             if ($value === null) {
                 return 'NULL';
             }
