@@ -86,6 +86,9 @@ class LaravelMaskedDump
             if ($value === '') {
                 return '""';
             }
+            if (str_starts_with($value, 'ST_GeomFromText')) {
+                return $value;
+            }
 
             return $this->escapeQuote($value);
         })->toArray();
