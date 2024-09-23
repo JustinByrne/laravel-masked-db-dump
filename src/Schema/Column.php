@@ -22,6 +22,12 @@ final class Column
     /** @var string|null */
     protected $comment;
 
+    /** @var string|null */
+    protected $collation;
+
+    /** @var string|null */
+    protected $charset;
+
     public function __construct(array $column)
     {
         $this->name = $column['name'];
@@ -30,6 +36,8 @@ final class Column
         $this->default = $column['default'];
         $this->auto_increment = $column['auto_increment'];
         $this->comment = $column['comment'];
+        $this->collation = $column['collation'];
+        $this->charset = !is_null($column['collation']) ? explode('_', $column['collation'])[0] : null;
     }
 
     public function getName(): string
@@ -62,9 +70,21 @@ final class Column
         return $this->comment;
     }
 
+    public function getCollation(): ?string
+    {
+        return $this->collation;
+    }
+
+    public function getCharset(): ?string
+    {
+        return $this->charset;
+    }
+
     public function toSql(): string
     {
         $sql = "`{$this->name}` {$this->type}";
+        $sql .= !is_null($this->charset) ? ' CHARSET ' . $this->charset : '';
+        $sql .= !is_null($this->collation) ? ' COLLATE ' . $this->collation : '';
         $sql .= !$this->nullable ? ' NOT NULL' : ' NULL';
         $sql .= !is_null($this->default) ? " DEFAULT '{$this->default}'" : '';
         $sql .= $this->nullable && is_null($this->default) ? ' DEFAULT NULL' : '';
