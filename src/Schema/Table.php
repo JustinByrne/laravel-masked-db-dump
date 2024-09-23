@@ -26,6 +26,9 @@ class Table
     protected $collation;
 
     /** @var string|null */
+    protected $charset;
+
+    /** @var string|null */
     protected $engine;
 
     public function __construct(array $table)
@@ -36,6 +39,7 @@ class Table
         $this->indexes = $this->getIndexes();
         $this->foreignKeys = $this->getForeignKeys();
         $this->collation = $table['collation'];
+        $this->charset = !is_null($table['collation']) ? explode('_', $table['collation'])[0] : null;
         $this->engine = $table['engine'];
     }
 
@@ -52,6 +56,11 @@ class Table
     public function getCollation(): ?string
     {
         return $this->collation;
+    }
+
+    public function getCharset(): ?string
+    {
+        return $this->charset;
     }
 
     public function getEngine(): ?string
@@ -117,7 +126,11 @@ class Table
             $sql .= ', ' . PHP_EOL . $foreignKey->toSql();
         });
 
-        $sql .= PHP_EOL . ');' . PHP_EOL;
+        $sql .= PHP_EOL . ')';
+        $sql .= !is_null($this->engine) ? ' ENGINE=' . $this->engine : '';
+        $sql .= !is_null($this->charset) ? ' DEFAULT CHARSET=' . $this->charset : '';
+        $sql .= !is_null($this->collation) ? ' COLLATE=' . $this->collation : '';
+        $sql .= ';' . PHP_EOL;
 
         return $sql;
     }
