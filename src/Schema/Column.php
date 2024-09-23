@@ -33,7 +33,7 @@ final class Column
         $this->name = $column['name'];
         $this->type = $column['type'];
         $this->nullable = $column['nullable'];
-        $this->default = $column['default'];
+        $this->default = $this->defaultValue($column['default']);
         $this->auto_increment = $column['auto_increment'];
         $this->comment = $column['comment'];
         $this->collation = $column['collation'];
@@ -86,11 +86,34 @@ final class Column
         $sql .= !is_null($this->charset) ? ' CHARSET ' . $this->charset : '';
         $sql .= !is_null($this->collation) ? ' COLLATE ' . $this->collation : '';
         $sql .= !$this->nullable ? ' NOT NULL' : ' NULL';
-        $sql .= !is_null($this->default) ? " DEFAULT '{$this->default}'" : '';
+        $sql .= !is_null($this->default) ? ' DEFAULT ' . $this->default : '';
         $sql .= $this->nullable && is_null($this->default) ? ' DEFAULT NULL' : '';
         $sql .= !is_null($this->comment) ? " COMMENT '{$this->comment}'" : '';
         $sql .= $this->auto_increment ? ' AUTO_INCREMENT' : '';
 
         return $sql;
+    }
+
+    private function defaultValue(?string $value): ?string
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        $commonMySQLFuncs = [
+            'CURRENT_TIMESTAMP',
+            'NOW',
+            'UUID',
+            'CURRDATE',
+            'RAND',
+            'YEAR',
+            'UNIX_TIMESTAMP'
+        ];
+
+        if (in_array($value, $commonMySQLFuncs) || str_ends_with($value, '()')) {
+            return $value;
+        } else {
+            return "'$value'";
+        }
     }
 }
