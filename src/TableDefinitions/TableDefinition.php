@@ -5,9 +5,12 @@ namespace BeyondCode\LaravelMaskedDumper\TableDefinitions;
 use BeyondCode\LaravelMaskedDumper\ColumnDefinitions\ColumnDefinition;
 use BeyondCode\LaravelMaskedDumper\Contracts\Column;
 use BeyondCode\LaravelMaskedDumper\Schema\Table;
+use Illuminate\Support\Traits\Macroable;
 
 class TableDefinition
 {
+    use Macroable;
+    
     const DUMP_FULL = 'full';
     const DUMP_SCHEMA = 'schema';
 
