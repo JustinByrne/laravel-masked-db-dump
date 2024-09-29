@@ -130,7 +130,7 @@ class Table
         $sql .= !is_null($this->engine) ? ' ENGINE=' . $this->engine : '';
         $sql .= !is_null($this->charset) ? ' DEFAULT CHARSET=' . $this->charset : '';
         $sql .= !is_null($this->collation) ? ' COLLATE=' . $this->collation : '';
-        $sql .= ';' . PHP_EOL;
+        $sql .= ';' . PHP_EOL . PHP_EOL;
 
         return $sql;
     }
