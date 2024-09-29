@@ -3,6 +3,7 @@
 namespace BeyondCode\LaravelMaskedDumper;
 
 use BeyondCode\LaravelMaskedDumper\TableDefinitions\TableDefinition;
+use Carbon\Carbon;
 use Illuminate\Console\OutputStyle;
 
 class LaravelMaskedDump
@@ -40,10 +41,12 @@ class LaravelMaskedDump
             file_put_contents($this->outputFile, '');
         }
 
-        $this->writeToFile('SET FOREIGN_KEY_CHECKS=0;' . PHP_EOL, $gz);
+        $this->writeToFile($this->createHeader(), $gz);
+        
+        $this->writeToFile('SET FOREIGN_KEY_CHECKS=0;' . PHP_EOL . PHP_EOL, $gz);
 
         foreach ($tables as $tableName => $table) {
-            $this->writeToFile("DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL, $gz);
+            $this->writeToFile("DROP TABLE IF EXISTS `$tableName`;" . PHP_EOL . PHP_EOL, $gz);
             $this->writeToFile($this->dumpSchema($table), $gz);
 
             if ($table->shouldDumpData()) {
@@ -101,14 +104,12 @@ class LaravelMaskedDump
 
     protected function lockTable(string $tableName)
     {
-        return "LOCK TABLES `$tableName` WRITE;" . PHP_EOL .
-            "ALTER TABLE `$tableName` DISABLE KEYS;" . PHP_EOL;
+        return "LOCK TABLES `$tableName` WRITE;" . PHP_EOL;
     }
 
     protected function unlockTable(string $tableName)
     {
-        return "ALTER TABLE `$tableName` ENABLE KEYS;" . PHP_EOL .
-            "UNLOCK TABLES;" . PHP_EOL;
+        return "UNLOCK TABLES;" . PHP_EOL . PHP_EOL;
     }
 
     protected function dumpTableData(TableDefinition $table, $file)
@@ -155,5 +156,16 @@ class LaravelMaskedDump
         } else {
             file_put_contents($this->outputFile, $dump, FILE_APPEND);
         }
+    }
+
+    protected function createHeader(): string
+    {
+        return '-- -------------------------------------------------------------' . PHP_EOL
+            . '-- -------------------------------------------------------------' . PHP_EOL
+            . '--' . PHP_EOL
+            . '-- Laravel Masked DB Dump' . PHP_EOL
+            . '--' . PHP_EOL
+            . '-- Generated Time: ' . Carbon::now()->format('Y-m-d H:i:s:u') . PHP_EOL
+            . '-- -------------------------------------------------------------' . PHP_EOL . PHP_EOL;
     }
 }
