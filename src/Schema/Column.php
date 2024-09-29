@@ -82,7 +82,7 @@ final class Column
 
     public function toSql(): string
     {
-        $sql = "`{$this->name}` {$this->type}";
+        $sql = "  `{$this->name}` {$this->type}";
         $sql .= !is_null($this->collation) ? ' COLLATE ' . $this->collation : '';
         $sql .= !$this->nullable ? ' NOT NULL' : ' NULL';
         $sql .= !is_null($this->default) ? ' DEFAULT ' . $this->default : '';
