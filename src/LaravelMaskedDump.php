@@ -161,8 +161,6 @@ class LaravelMaskedDump
     protected function createHeader(): string
     {
         return '-- -------------------------------------------------------------' . PHP_EOL
-            . '-- -------------------------------------------------------------' . PHP_EOL
-            . '--' . PHP_EOL
             . '-- Laravel Masked DB Dump' . PHP_EOL
             . '--' . PHP_EOL
             . '-- Generated Time: ' . Carbon::now()->format('Y-m-d H:i:s:u') . PHP_EOL
